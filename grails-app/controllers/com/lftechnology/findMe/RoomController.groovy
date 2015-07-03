@@ -2,6 +2,7 @@ package com.lftechnology.findMe
 
 
 import static org.springframework.http.HttpStatus.*
+import grails.plugin.springsecurity.annotation.Secured;
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)
@@ -9,19 +10,23 @@ class RoomController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+    @Secured(["IS_AUTHENTICATED_FULLY"])
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         respond Room.list(params), model: [roomInstanceCount: Room.count()]
     }
 
+    @Secured(["IS_AUTHENTICATED_FULLY"])
     def show(Room roomInstance) {
         respond roomInstance
     }
 
+    @Secured(["IS_AUTHENTICATED_FULLY"])
     def create() {
         respond new Room(params)
     }
 
+    @Secured(["IS_AUTHENTICATED_FULLY"])
     @Transactional
     def save(Room roomInstance) {
         if (roomInstance == null) {
@@ -38,7 +43,10 @@ class RoomController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'room.label', default: 'Room'), roomInstance.id])
+                flash.message = message(code: 'default.created.message', args: [
+                    message(code: 'room.label', default: 'Room'),
+                    roomInstance.id
+                ])
                 redirect roomInstance
             }
             '*' { respond roomInstance, [status: CREATED] }
@@ -49,6 +57,7 @@ class RoomController {
         respond roomInstance
     }
 
+    @Secured(["IS_AUTHENTICATED_FULLY"])
     @Transactional
     def update(Room roomInstance) {
         if (roomInstance == null) {
@@ -65,13 +74,17 @@ class RoomController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Room.label', default: 'Room'), roomInstance.id])
+                flash.message = message(code: 'default.updated.message', args: [
+                    message(code: 'Room.label', default: 'Room'),
+                    roomInstance.id
+                ])
                 redirect roomInstance
             }
             '*' { respond roomInstance, [status: OK] }
         }
     }
 
+    @Secured(["IS_AUTHENTICATED_FULLY"])
     @Transactional
     def delete(Room roomInstance) {
 
@@ -84,7 +97,10 @@ class RoomController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Room.label', default: 'Room'), roomInstance.id])
+                flash.message = message(code: 'default.deleted.message', args: [
+                    message(code: 'Room.label', default: 'Room'),
+                    roomInstance.id
+                ])
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NO_CONTENT }
@@ -94,7 +110,10 @@ class RoomController {
     protected void notFound() {
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'room.label', default: 'Room'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [
+                    message(code: 'room.label', default: 'Room'),
+                    params.id
+                ])
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NOT_FOUND }
